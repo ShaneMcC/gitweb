@@ -2984,8 +2984,11 @@ EOF
 		print qq(<link rel="shortcut icon" href="$favicon" type="image/png" />\n);
 	}
 
+	print qq(<link href="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.css" type="text/css" rel="stylesheet" />\n);
+	print qq(<script src="http://google-code-prettify.googlecode.com/svn/trunk/src/prettify.js" type="text/javascript"></script>\n);
+
 	print "</head>\n" .
-	      "<body>\n";
+	      "<body onload=\"prettyPrint()\">\n";
 
 	if (-f $site_header) {
 		insert_file($site_header);
@@ -4887,16 +4890,26 @@ sub git_blob {
 		      qq!" />\n!;
 	} else {
 		my $nr;
+		print "<table><tr><td class=\"numbers\"><pre>";
 		while (my $line = <$fd>) {
 			chomp $line;
 			$nr++;
-			$line = untabify($line);
-			printf "<div class=\"pre\"><a id=\"l%i\" href=\"#l%i\" class=\"linenr\">%4i</a> %s</div>\n",
-			       $nr, $nr, $nr, esc_html($line, -nbsp=>1);
+			printf "<a id=\"l%i\" href=\"#l%i\" class=\"linenr\">%4i</a>\n", $nr, $nr, $nr;
 		}
+		print "</pre></td>";
+		open my $fd2, "-|", git_cmd(), "cat-file", "blob", $hash;
+		print "<td class=\"lines\"><pre class=\"prettyprints\">";
+		while (my $line = <$fd2>) {
+			chomp $line;
+			$line = untabify($line);
+			printf "%s\n", esc_html($line, -nbsp=>1)
+		}
+		print "</pre></td></tr></table>";
+		close $fd2;
 	}
 	close $fd
 		or print "Reading blob failed.\n";
+
 	print "</div>";
 	git_footer_html();
 }
