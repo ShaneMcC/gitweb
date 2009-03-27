@@ -4536,10 +4536,17 @@ sub git_summary {
 
 	print "<div class=\"title\">obtaining the code</div>\n";
 	print "<div class=\"readme\">\n";
-	print "<p>The code for this project can be obtained using either of the following:\n";
+	print "<p>The code for this project can be obtained using the following method(s):\n";
 	print "<ul>\n";
 	print "        <li> <span style=\"font-family: monospace\">git clone <span style=\"font-style: italic\">".$git_clone_url.$project."/</span></span></li>\n";
+	if (! -s "$projectroot/$project/info/refs") {
+		print "<!-- Web clone not available for this project, git-update-server-info must be run first. -->\n";
+		print "<!--\n";
+	}
 	print "        <li> <span style=\"font-family: monospace\">git clone <span style=\"font-style: italic\">".$web_clone_url.$project."/</span></span></li>\n";
+	if (! -s "$projectroot/$project/info/refs") {
+		print "-->\n";
+	}
 	print "</ul>\n";
 	print "</p>\n";
 	print "</div>\n";
