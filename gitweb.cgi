@@ -4525,13 +4525,17 @@ sub git_summary {
 
 	print "</table>\n";
 
-	# If XSS prevention is on, we don't include README.html.
-	# TODO: Allow a readme in some safe format.
-	if (!$prevent_xss && -s "$projectroot/$project/README.html") {
-		print "<div class=\"title\">readme</div>\n" .
-		      "<div class=\"readme\">\n";
-		insert_file("$projectroot/$project/README.html");
-		print "\n</div>\n"; # class="readme"
+	if (my $readme_base = $hash_base || git_get_head_hash($project)) {
+		if (my $readme_hash = git_get_hash_by_path($readme_base, "README.html", "blob")) {
+			if (open my $fd, "-|", git_cmd(), "cat-file", "blob", $readme_hash) {
+				print "<div class=\"title\">readme</div>\n";
+				print "<div class=\"readme\">\n";
+				
+				print <$fd>;
+				close $fd;
+				print "\n</div>\n";
+			}
+		}
 	}
 
 	# we need to request one more than 16 (0..15) to check if
