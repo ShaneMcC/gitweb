@@ -3917,13 +3917,16 @@ sub git_summary {
 	}
 	print "</table>\n";
 
-	if (-s "$projectroot/$project/README.html") {
-		if (open my $fd, "$projectroot/$project/README.html") {
-			print "<div class=\"title\">readme</div>\n" .
-			      "<div class=\"readme\">\n";
-			print $_ while (<$fd>);
-			print "\n</div>\n"; # class="readme"
-			close $fd;
+	if (my $readme_base = $hash_base || git_get_head_hash($project)) {
+		if (my $readme_hash = git_get_hash_by_path($readme_base, "README.html", "blob")) {
+			if (open my $fd, "-|", git_cmd(), "cat-file", "blob", $readme_hash) {
+				print "<div class=\"title\">readme</div>\n";
+				print "<div class=\"readme\">\n";
+				
+				print <$fd>;
+				close $fd;
+				print "\n</div>\n";
+			}
 		}
 	}
 
