@@ -27,6 +27,12 @@ our $version = "1.6.2.1";
 our $my_url = $cgi->url();
 our $my_uri = $cgi->url(-absolute => 1);
 
+# url where git projects can be cloned by http://
+our $web_clone_url = "http://git.soren.co.uk/r/";
+
+# url where git projects can be cloned by git://
+our $git_clone_url = "git://git.soren.co.uk/";
+
 # Base URL for relative URLs in gitweb ($logo, $favicon, ...),
 # needed and used only for URLs with nonempty PATH_INFO
 our $base_url = $my_url;
@@ -4527,6 +4533,16 @@ sub git_summary {
 	}
 
 	print "</table>\n";
+
+	print "<div class=\"title\">obtaining the code</div>\n";
+	print "<div class=\"readme\">\n";
+	print "<p>The code for this project can be obtained using either of the following:\n";
+	print "<ul>\n";
+	print "        <li> <span style=\"font-family: monospace\">git clone <span style=\"font-style: italic\">".$git_clone_url.$project."/</span></span></li>\n";
+	print "        <li> <span style=\"font-family: monospace\">git clone <span style=\"font-style: italic\">".$web_clone_url.$project."/</span></span></li>\n";
+	print "</ul>\n";
+	print "</p>\n";
+	print "</div>\n";
 
 	if (my $readme_base = $hash_base || git_get_head_hash($project)) {
 		if (my $readme_hash = git_get_hash_by_path($readme_base, "README.html", "blob")) {
